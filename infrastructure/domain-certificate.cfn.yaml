@@ -1,0 +1,27 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: SSL/TLS certificate for apex and immediate sub-domains.
+
+Parameters:
+
+  ApexDomain:
+    Type: String
+    Description: Apex domain name, e.g. mysite.com (not www.mysite.com)
+    MinLength: 4 # mandatory, valid cannot be shorter than 4
+
+Resources:
+
+  Certificate:
+    Type: AWS::CertificateManager::Certificate
+    Properties:
+      DomainName: !Ref ApexDomain
+      SubjectAlternativeNames:
+        - !Sub '*.${ApexDomain}'
+      ValidationMethod: DNS
+
+Outputs:
+
+  CertificateArn:
+    Description: ARN of SSL/TLS certificate for use with this domain and sub-domains
+    Value: !Ref Certificate
+    Export:
+      Name: !Sub '${AWS::StackName}:certificate-arn'

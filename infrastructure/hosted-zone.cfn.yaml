@@ -1,0 +1,28 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: HostedZone for one domain
+
+Parameters:
+
+  ApexDomain:
+    Type: String
+    Description: Apex domain name, e.g. mysite.com (not www.mysite.com)
+    MinLength: 4 # mandatory, valid cannot be shorter than 4
+
+Resources:
+
+  HostedZone:
+    Type: AWS::Route53::HostedZone
+    Properties:
+      Name: !Ref ApexDomain
+
+Outputs:
+
+  NameServers:
+    Description: Name servers for use with external domain registrar (GoDaddy, NameCheap, etc)
+    Value: !Join [ ",", !GetAtt HostedZone.NameServers ]
+
+  HostedZoneId:
+    Description: Identifer that can be optionally be used for record sets in this hosted zone
+    Value: !Ref HostedZone
+    Export:
+      Name: !Sub  '${AWS::StackName}:hosted-zone-id'
